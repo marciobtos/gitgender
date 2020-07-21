@@ -1,4 +1,4 @@
-# Summary:
+# Summary
 This tool was designed to extract the data used on the paper Work Practices and Perceptions from Women Core Developers in OSS communities. The tool is able to clone a set of GitHub repositories, extract metadata, compute the Core Developers from the cloned repositories and classify their gender.  
 
 To extract metadata from repositories the tool relies on GitHub API. Therefore, you must already have an account on GitHub API to be able to run it.  
@@ -10,7 +10,7 @@ The gender classifier is based on two applications: GenderComputer (https://gith
 In order to deal with environment issues (JVM, different Python versions, gender classifier setup) GitGender relies on a Docker container. 
 
 
-# Requirements:  
+# Requirements  
 
 * A GitHub account (it will be used to get data from GitHub API).   
 * A Namsor account (it will be used to identify developers by gender).  
@@ -22,7 +22,7 @@ In order to deal with environment issues (JVM, different Python versions, gender
 3 - Enter the cloned folder and edit dockerFile. Fulfill the variables at the start of file with your Github credentials and Namsor API key
 4 - Build the docker image typing the command: docker build -t gitgender.  
 
-# Running:
+# Running
 Now, you have to run a container from the created image. You must map folder /git/gender on the container to the shared folder created on step 1 (on the host machine) and the process will start automatically (be careful, it can take a long time and download a huge amount of data). For example:   
     
 
