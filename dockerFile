@@ -1,0 +1,108 @@
+#Download base image ubuntu 16.04
+FROM ubuntu:16.04
+
+###edit variables below with your credentials  ##############
+
+#github username and password to extract data from GitHub API
+ENV usergit=
+ENV pwdgit=
+
+#Namsor keyapi. It's needed to call the namsor API (gender classifier)
+ENV keyapi=								  
+
+#the number of repositories that will be downloaded. (be careful it can download a lot of data!)
+ENV num_projects=100
+############################################
+
+
+# Update Ubuntu Software repository
+RUN apt-get update
+
+
+
+#installing packages
+RUN apt-get install -y ssh
+RUN apt-get install -y python
+RUN apt-get install -y python-pip 
+RUN apt-get install -y python3-pip 
+RUN apt-get install -y python3-dev 
+RUN apt-get install -y python3-dev 
+RUN apt-get install -y git
+RUN apt-get install -y xvfb
+RUN apt-get install -y unzip
+RUN apt-get install -y curl
+
+
+#configuring cloc
+RUN apt-get install -y cloc
+RUN apt-get remove -y cloc
+RUN apt-get install -y libparallel-forkmanager-perl
+RUN wget -P /tmp http://archive.ubuntu.com/ubuntu/pool/universe/c/cloc/cloc_1.86-1_all.deb
+RUN dpkg -i /tmp/cloc_1.86-1_all.deb
+
+
+#setting repository apt-get
+RUN curl -sS -o - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add
+RUN echo "deb [arch=amd64]  http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list
+RUN apt-get update
+RUN apt-get -y install google-chrome-stable
+
+#configuring java
+RUN apt-get install -y openjdk-8-jdk
+ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+
+#installing maven
+RUN apt-get install -y maven
+
+
+#setting environment
+RUN mkdir /gitgender
+#RUN git clone https://github.com/marciobtos/gitgender.git -l gitgender/
+#RUN rm -f gitgender/*.csv
+COPY 1.getRepo.py /gitgender/
+COPY 2.getAttrib.py /gitgender/
+COPY 3.gender_classifier.py /gitgender/
+COPY 4.Summary.py /gitgender/
+COPY ListProjects.py /gitgender/
+COPY start.sh /gitgender/
+RUN chmod +x /gitgender/start.sh
+
+#creating folders
+RUN mkdir /tmp/clones
+RUN mkdir /gitgender/truckfactor
+RUN mkdir /gitgender/genderComputer
+RUN mkdir /gitgender/files
+
+#setting environment
+RUN git clone https://github.com/aserg-ufmg/Truck-Factor.git -l /gitgender/truckfactor
+RUN cd /gitgender/truckfactor/gittruckfactor; mvn package
+RUN cp /gitgender/truckfactor/gittruckfactor/config.properties /gitgender/truckfactor/gittruckfactor/target
+RUN git clone https://github.com/tue-mdse/genderComputer -l /gitgender/genderComputer
+RUN touch /gitgender/genderComputer/__init__.py
+RUN cd /gitgender/genderComputer; git reset --hard 50206dc
+RUN wget -P /tmp https://chromedriver.storage.googleapis.com/2.35/chromedriver_linux64.zip
+RUN unzip /tmp/chromedriver_linux64.zip -d /tmp
+
+
+#installing python3 dependencies
+RUN python3 -m pip install --upgrade pip
+RUN python3 -m pip install pandas
+RUN python3 -m pip install PyGithub
+RUN python3 -m pip install -U selenium
+RUN python3 -m pip install geopy
+RUN python3 -m pip install PyVirtualDisplay
+RUN python3 -m pip install matplotlib
+
+
+
+#installing python2 dependencies
+RUN python2 -m pip install --upgrade pip
+RUN python2 -m pip install pandas
+RUN python2 -m pip install unicode
+RUN python2 -m pip install unidecode
+RUN python2 -m pip install nameparser
+RUN python2 -m pip install requests
+RUN python2 -m pip install iso3166
+
+WORKDIR /gitgender
+ENTRYPOINT ["/gitgender/start.sh"]
