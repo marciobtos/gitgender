@@ -1,5 +1,5 @@
 # Summary:
-This tool was designed to extract the data used on the paper On the Contributions from Women Key Developers to Open-Source Communities. The tool is able to clone a set of GitHub repositories, extract metadata, compute the Core Developers from the cloned repositories and classify their gender.  
+This tool was designed to extract the data used on the paper Work Practices and Perceptions from Women Core Developers in OSS communities. The tool is able to clone a set of GitHub repositories, extract metadata, compute the Core Developers from the cloned repositories and classify their gender.  
 
 To extract metadata from repositories the tool relies on GitHub API. Therefore, you must already have an account on GitHub API to be able to run it.  
 
